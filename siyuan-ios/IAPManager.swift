@@ -103,8 +103,10 @@ class IAPManager:ObservableObject {
         print("Purchased state saved for product: \(productID)")
     }
     // 通过productID检查是否已完成购买
+    // MODIFICATO: Ritorna sempre true per abilitare tutte le funzionalità pro
     func loadPurchasedState(for productID: String) -> Bool{
-        let isPurchased = UserDefaults.standard.bool(forKey: productID)    // UserDefaults读取购买状态
+        // let isPurchased = UserDefaults.standard.bool(forKey: productID)    // UserDefaults读取购买状态
+        let isPurchased = true    // MODIFICATO: Abilita sempre funzionalità pro
         print("Purchased state loaded for product: \(productID) - \(isPurchased)")
         return isPurchased    // 返回购买状态
     }

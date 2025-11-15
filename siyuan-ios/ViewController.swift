@@ -110,6 +110,7 @@ class ViewController: UIViewController, WKNavigationDelegate, UIScrollViewDelega
     }
     
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+        // NOTA PRIVACY: Il kernel viene riavviato velocemente quando richiesto dalla WebView
         if message.name == "startKernelFast" {
             let urls = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
             Iosk.MobileStartKernelFast("ios", Bundle.main.resourcePath, urls[0].path, "")
@@ -168,6 +169,10 @@ class ViewController: UIViewController, WKNavigationDelegate, UIScrollViewDelega
         }
     }
     
+    // NOTA PRIVACY: Le connessioni di rete sono gestite dal kernel Go nativo (Iosk).
+    // Per disabilitare connessioni esterne mantenendo solo quelle per i backup,
+    // è necessario modificare il codice Go del kernel prima della compilazione.
+    // Il kernel viene avviato qui con MobileStartKernel.
     func initKernel () {
         let urls = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
         Iosk.MobileStartKernel("ios", Bundle.main.resourcePath, urls[0].path, TimeZone.current.identifier, getIP(), Locale.preferredLanguages[0].prefix(2) == "zh" ? "zh_CN" : "en_US", UIDevice.current.systemVersion);
@@ -243,6 +248,7 @@ class ViewController: UIViewController, WKNavigationDelegate, UIScrollViewDelega
     
     @objc func willEnterForeground(_ notification: NSNotification!) {
         // iOS 端息屏后内核退出，再次进入时重新拉起内核
+        // NOTA PRIVACY: Questa connessione è locale (127.0.0.1) e serve solo a verificare se il kernel è attivo
         let url = URL(string: "http://127.0.0.1:6806/api/system/version")!
         let task = URLSession.shared.dataTask(with: url) {(data, response, error) in
             guard let _ = data, error == nil else {
