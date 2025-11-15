@@ -141,32 +141,43 @@ class ViewController: UIViewController, WKNavigationDelegate, UIScrollViewDelega
     }
 
     
+    // MODIFICATO: Rafforzata protezione per bloccare connessioni esterne
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         let url = navigationAction.request.url
         guard url != nil else {
-            print(url!)
-            decisionHandler(.allow)
+            print("URL nil, blocked")
+            decisionHandler(.cancel)  // MODIFICATO: Blocca se URL è nil
             return
         }
+
+        let urlString = url!.description.lowercased()
+
+        // PRIVACY: Permetti solo URL locali (127.0.0.1:6806) e siyuan://
         if url!.description == "siyuan://api/system/exit" {
             decisionHandler(.cancel)
             UIApplication.shared.perform(#selector(NSXPCConnection.suspend))
-        } else if (
-            url!.description.lowercased().starts(with: "http://127.0.0.1:6806/assets") == true ||
-            url!.description.lowercased().starts(with: "http://127.0.0.1:6806/export") == true || // 导出 Data
-            (
-                url!.description.lowercased().starts(with: "http://127.0.0.1:6806") == false &&
-                navigationAction.targetFrame?.request != nil && navigationAction.targetFrame?.request.url?.description.lowercased().starts(with: "http://127.0.0.1:6806") == true
-            )
-        ) && UIApplication.shared.canOpenURL(url!) {
-            decisionHandler(.cancel)
-            UIApplication.shared.open(url!, options: [:], completionHandler: nil)
-        } else if navigationAction.navigationType == .linkActivated && UIApplication.shared.canOpenURL(url!) {
-            decisionHandler(.cancel)
-            UIApplication.shared.open(url!, options: [:], completionHandler: nil)
+        } else if urlString.starts(with: "http://127.0.0.1:6806") ||
+                  urlString.starts(with: "https://127.0.0.1:6806") ||
+                  urlString.starts(with: "siyuan://") {
+            // Permetti solo connessioni locali
+            if urlString.starts(with: "http://127.0.0.1:6806/assets") ||
+               urlString.starts(with: "http://127.0.0.1:6806/export") {
+                // Apri file locali nell'app esterna (PDF, immagini, etc)
+                decisionHandler(.cancel)
+                UIApplication.shared.open(url!, options: [:], completionHandler: nil)
+            } else {
+                decisionHandler(.allow)
+            }
         } else {
-            decisionHandler(.allow)
+            // PRIVACY: Blocca TUTTE le altre connessioni esterne
+            print("⛔ PRIVACY: Connessione esterna bloccata: \(url!.description)")
+            decisionHandler(.cancel)
         }
+
+        // ORIGINALE DISABILITATO - permetteva link esterni:
+        // } else if navigationAction.navigationType == .linkActivated && UIApplication.shared.canOpenURL(url!) {
+        //     decisionHandler(.cancel)
+        //     UIApplication.shared.open(url!, options: [:], completionHandler: nil)
     }
     
     // NOTA PRIVACY: Le connessioni di rete sono gestite dal kernel Go nativo (Iosk).
