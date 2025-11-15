@@ -82,10 +82,25 @@ open siyuan-ios.xcodeproj
 # 5. Connetti iPhone e clicca Play ▶️
 ```
 
-## Note
+## 🚀 Installazione SENZA Scadenza
 
 ⚠️ Con account Apple gratuito, l'app scade ogni **7 giorni** e va reinstallata.
 
-💰 Con Apple Developer Account ($99/anno), l'app dura **1 anno**.
+### 📖 Vuoi evitare la reinstallazione ogni 7 giorni?
 
-🔄 Alternative: Usa **AltStore** per auto-rinnovo ogni 7 giorni.
+👉 **[LEGGI LA GUIDA COMPLETA: INSTALLAZIONE_PERMANENTE.md](./INSTALLAZIONE_PERMANENTE.md)**
+
+**Soluzioni disponibili:**
+
+| Soluzione | Costo | Validità | Difficoltà |
+|-----------|-------|----------|------------|
+| **TrollStore** | Gratis | Permanente ✅ | Media |
+| **AltStore Auto-Refresh** | Gratis | Infinito* | Media |
+| **Developer Account** | $99/anno | 1 anno | Facile ✅ |
+
+*Auto-refresh automatico, richiede Mac acceso
+
+**💡 Raccomandazione:**
+- iOS 14-16.6.1? → **TrollStore** (permanente, gratis)
+- Hai Mac sempre acceso? → **AltStore** (gratis, automatico)
+- Vuoi semplicità? → **Developer Account** ($99/anno)
